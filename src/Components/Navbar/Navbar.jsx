@@ -13,10 +13,6 @@ const Navbar = () => {
         setMenuOpen(!menuOpen)
     }
 
-    const closeMenu = () => {
-        setMenuOpen(false)
-    }
-
     return (
         <nav className='mt-6 lg:mt-10 w-11/12 mx-auto'>
             <div className='flex items-center justify-between'>
@@ -32,7 +28,7 @@ const Navbar = () => {
                     <h3 className='font-bold text-lg sm:text-xl lg:text-3xl'>Digital Boipoka</h3>
                 </div>
 
-                {/* Desktop Navigation */}
+                
                 <div className='hidden lg:flex gap-5 items-center'>
                     <NavLink to="/" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
                         Home
@@ -42,7 +38,7 @@ const Navbar = () => {
                     </NavLink>
                 </div>
 
-                {/* Auth Button */}
+                
                 <div>
                     {user ? (
                         <button
@@ -61,7 +57,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            
             {menuOpen && (
                 <div className='lg:hidden mt-4 pb-4 border-t w-50 border-base-300 bg-base-10 shadow-2xl rounded-lg'>
                     <div className='flex flex-col space-y-3 pt-4 px-4'>
