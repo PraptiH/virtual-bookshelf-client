@@ -28,7 +28,7 @@ const Navbar = () => {
                     <h3 className='font-bold text-lg sm:text-xl lg:text-3xl'>Digital Boipoka</h3>
                 </div>
 
-                
+
                 <div className='hidden lg:flex gap-5 items-center'>
                     <NavLink to="/" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
                         Home
@@ -36,9 +36,18 @@ const Navbar = () => {
                     <NavLink to="/bookshelf" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
                         Bookshelf
                     </NavLink>
+                    <NavLink to="/addbook" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                        Add Book
+                    </NavLink>
+                    <NavLink to="/mybook" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                        My Book
+                    </NavLink>
+                    <NavLink to="/profile" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                        Profile
+                    </NavLink>
                 </div>
 
-                
+
                 <div>
                     {user ? (
                         <button
@@ -57,7 +66,7 @@ const Navbar = () => {
                 </div>
             </div>
 
-            
+
             {menuOpen && (
                 <div className='lg:hidden mt-4 pb-4 border-t w-50 border-base-300 bg-base-10 shadow-2xl rounded-lg'>
                     <div className='flex flex-col space-y-3 pt-4 px-4'>
@@ -66,6 +75,15 @@ const Navbar = () => {
                         </NavLink>
                         <NavLink to="/bookshelf" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
                             Bookshelf
+                        </NavLink>
+                        <NavLink to="/addbook" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                            Add Book
+                        </NavLink>
+                        <NavLink to="/mybook" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                            My Book
+                        </NavLink>
+                        <NavLink to="/profile" className={({ isActive }) => isActive ? 'text-primary font-semibold' : 'text-base-content hover:text-primary transition-colors'}>
+                            Profile
                         </NavLink>
                     </div>
                 </div>
