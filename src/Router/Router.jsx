@@ -9,6 +9,7 @@ import PrivateRoutes from "../Components/PrivateRoutes/PrivateRoutes";
 import AddBook from "../Pages/AddBook/AddBook"
 import MyBook from "../Pages/MyBook/MyBook"
 import Profile from "../Pages/Profile/Profile"
+import BookDetails from "../Pages/BookDetails/BookDetails";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,11 @@ export const router = createBrowserRouter([
         path: '/bookshelf',
         loader : () =>fetch(`http://localhost:3000/books`),
         Component : BookShelf
+      },
+      {
+        path : '/books/:id',
+        loader : ({params}) =>fetch(`http://localhost:3000/books/${params.id}`),
+        element : <PrivateRoutes><BookDetails></BookDetails></PrivateRoutes>
       },
       {
         path: '/addbook',
