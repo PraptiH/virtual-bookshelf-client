@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider/AuthContext';
-import { GoogleAuthProvider } from 'firebase/auth';
+import { GoogleAuthProvider, updateProfile } from 'firebase/auth';
 
 
 const SignUp = () => {
@@ -15,12 +15,38 @@ const SignUp = () => {
     const handleSignUp = (e) => {
         e.preventDefault()
         const form = e.target;
-        const email = form.email.value
-        const password = form.password.value
+        const formData = new FormData(form);
+        const { email, password, name, photoURL, ...restFromData } = Object.fromEntries(formData.entries());
         console.log(email, password)
 
         createUser(email, password)
-            .then(() => {
+            .then(async result => {
+                const user = result.user
+                await updateProfile(user, { displayName: name, photoURL: photoURL })
+                const userProfile = {
+                    name: name,
+                    email: user?.email,
+                    photoURL: photoURL,
+                    creationTime: user?.metadata.creationTime,
+                    lastSignInTime: user?.metadata.lastSignInTime,
+                    ...restFromData
+                };
+                fetch(`http://localhost:3000/users`, {
+                    method: "POST",
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(userProfile)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.insertedId) {
+                            console.log("New user", data)
+                        }
+                        else {
+                            console.log("User exist")
+                        }
+                    })
                 navigate('/')
             })
             .catch(error => {
@@ -30,9 +56,30 @@ const SignUp = () => {
 
     const handleGoogleSignUp = () => {
         createUser2(provider)
-            .then(() => {
-                navigate('/');
+            .then(result => {
+                const user = result.user
+                const userProfile = {
+                    name: user?.displayName,
+                    email: user?.email,
+                    photoURL: user?.photoURL,
+                    creationTime: user?.metadata.creationTime,
+                    lastSignInTime: user?.metadata.lastSignInTime
+                };
+                fetch(`http://localhost:3000/users`, {
+                    method: "POST",
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(userProfile)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                    })
+                navigate('/')
             })
+
+
             .catch(error => {
                 console.log(error);
             });
@@ -76,7 +123,7 @@ const SignUp = () => {
                             <input type="email" className="input" name='email' placeholder="Email" />
 
                             <label className="label">Photo URL</label>
-                            <input type="text" className="input" name='photoURL' placeholder="Photo URL" />
+                            <input type="url" className="input" name='photoURL' placeholder="Photo URL" />
 
                             <label className="label">Password</label>
                             <input type="password" className="input" name='password' value={password} onChange={handlePasswordChange} placeholder="Password" />

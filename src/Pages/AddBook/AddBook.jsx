@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AddBook = () => {
     const { user } = useContext(AuthContext)
-    // const [emailUser, setEmailUser] = useState(null)
+    
     const navigate = useNavigate()
 
     const handleAddBook = e => {
@@ -17,8 +17,29 @@ const AddBook = () => {
         const page = form.page.value
         const bookCategory = form.bookCategory.value
         const readingStatus = form.readingStatus.value
+        const formData = new FormData(form)
+        const newBook = Object.fromEntries(formData.entries())
         console.log(title, author, cover, page, bookCategory, readingStatus)
-        navigate('/')
+        fetch(`http://localhost:3000/books`, {
+            method: "POST",
+            headers: {
+                'content-type': "application/json"
+            },
+            body: JSON.stringify(newBook)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.insertedId) {
+                    alert("Book added successfully!")
+                    form.reset()
+                    navigate('/')
+                }
+            })
+            .catch(error => {
+                console.error('Error adding book:', error)
+                alert('Failed to add book. Please try again.')
+            })
+
     }
     return (
         <div>
@@ -35,7 +56,7 @@ const AddBook = () => {
                             <input type="url" name='cover' className="input" placeholder="Cover Photo" />
 
                             <label className="label">Total Page</label>
-                            <input type="text" className="input" name='page' required placeholder="Total Page" />
+                            <input type="number" className="input" name='page' required placeholder="Total Page" />
 
                             <label className="label">Book Author</label>
                             <input type="text" className="input" name='author' required placeholder="Book Author" />
