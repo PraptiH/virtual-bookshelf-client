@@ -11,15 +11,9 @@ const AddBook = () => {
     const handleAddBook = e => {
         e.preventDefault()
         const form = e.target;
-        const title = form.title.value
-        const author = form.author.value
-        const cover = form.cover.value
-        const page = form.page.value
-        const bookCategory = form.bookCategory.value
-        const readingStatus = form.readingStatus.value
         const formData = new FormData(form)
         const newBook = Object.fromEntries(formData.entries())
-        console.log(title, author, cover, page, bookCategory, readingStatus)
+        
         fetch(`http://localhost:3000/books`, {
             method: "POST",
             headers: {
