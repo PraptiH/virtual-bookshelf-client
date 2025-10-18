@@ -40,7 +40,7 @@ const AddBook = () => {
             <div className="hero  min-h-screen">
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                     <div className="card-body">
-                        <h1 className="text-2xl text-center font-bold">Looking for a Roommate</h1>
+                        <h1 className="text-2xl text-center font-bold">Add your Book</h1>
                         <form onSubmit={handleAddBook} className="fieldset">
 
                             <label className="label">Book Title</label>

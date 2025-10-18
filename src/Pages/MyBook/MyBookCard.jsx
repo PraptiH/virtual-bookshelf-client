@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const MyBookCard = ({ mybook }) => {
     return (
-        <div className='bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300'>
+        <div className='bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 '>
             <div className='p-4 space-y-3'>
                 <div className='w-full h-48 md:h-56 overflow-hidden rounded-lg bg-gray-100'>
                     <img
@@ -34,7 +34,7 @@ const MyBookCard = ({ mybook }) => {
                             Update
                         </button>
                     </Link>
-                    <button className='btn btn-outline btn-error btn-sm md:btn-md flex-1'>
+                    <button className='btn btn-outline btn-error flex-1'>
                         Delete
                     </button>
                 </div>

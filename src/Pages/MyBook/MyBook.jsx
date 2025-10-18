@@ -19,7 +19,7 @@ const MyBook = () => {
     const myBooks = books.filter(book => book.email === user?.email)
 
     return (
-        <div className='min-h-screen py-8 px-4 bg-base-200'>
+        <div className='min-h-screen py-8 px-4 bg-gray-100 mt-10'>
             <div className='max-w-7xl mx-auto'>
                 <h2 className='text-3xl md:text-4xl font-bold text-center mb-8'>My Books</h2>
 
