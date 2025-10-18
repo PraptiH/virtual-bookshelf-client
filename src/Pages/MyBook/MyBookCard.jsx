@@ -1,7 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 const MyBookCard = ({ mybook }) => {
+    const [books, setBooks] = useState([])
+    
+    useEffect(()=>{
+        fetch(`http://localhost:3000/books`)
+        .then(res=>res.json())
+        .then(data=>{
+            setBooks(data)
+        })
+    },[])
+    const handleDelete = id => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:3000/books/${id}`, {
+                    method: "DELETE",
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.deletedCount) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                            });
+                            const remainingBook = books.filter(book => book._id !== mybook._id)
+                            setBooks(remainingBook)
+                        }
+                    })
+            }
+        });
+    }
     return (
         <div className='bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 '>
             <div className='p-4 space-y-3'>
@@ -34,7 +73,7 @@ const MyBookCard = ({ mybook }) => {
                             Update
                         </button>
                     </Link>
-                    <button className='btn btn-outline btn-error flex-1'>
+                    <button onClick={() => handleDelete(mybook._id)} className='btn btn-outline btn-error flex-1'>
                         Delete
                     </button>
                 </div>

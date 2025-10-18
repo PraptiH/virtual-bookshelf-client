@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider/AuthContext';
 import { GoogleAuthProvider } from 'firebase/auth';
+import Swal from 'sweetalert2';
 
 const SignIn = () => {
 
@@ -18,6 +19,13 @@ const SignIn = () => {
 
         signInUser(email, password)
             .then(() => {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Successfully Log In",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
                 navigate('/')
             })
             .catch(error => {
@@ -44,8 +52,14 @@ const SignIn = () => {
                     body: JSON.stringify(userProfile)
                 })
                     .then(res => res.json())
-                    .then(data => {
-                        console.log(data)
+                    .then(() => {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Successfully Log In with Google",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
                     })
                 navigate('/')
 

@@ -1,13 +1,39 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../AuthProvider/AuthContext';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const UpdateBook = () => {
-    const {user} = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const bookInfo = useLoaderData()
-    const {title, cover, page, author, bookCategory, readingStatus, overview, name, email} = bookInfo
-    const handleUpdateBook = e =>{
+    const navigate = useNavigate()
+    const { _id, title, cover, page, author, bookCategory, readingStatus, overview, name, email } = bookInfo
+
+    const handleUpdateBook = e => {
         e.preventDefault()
+        const form = e.target
+        const formData = new FormData(form)
+        const updatedBook = Object.fromEntries(formData.entries())
+        fetch(`http://localhost:3000/books/${_id}`, {
+            method: "PUT",
+            headers: {
+                'content-type': "application/json"
+            },
+            body: JSON.stringify(updatedBook)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if(data.modifiedCount){
+                    Swal.fire({
+                        position : "top-end",
+                        icon:"success",
+                        title:"Updated Successfully",
+                        showConfirmButton:false,
+                        timer:1500
+                    })
+                }
+                navigate('/')
+            })
     }
     return (
         <div>
