@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaHeart } from "react-icons/fa";
 
 const Books = ({ book }) => {
     return (
@@ -10,8 +11,10 @@ const Books = ({ book }) => {
                     <h3 className='text-xl font-bold text-gray-800 line-clamp-2'>{book.title}</h3>
                     <span className='badge badge-accent'>{book.bookCategory}</span>
                 </div>
-                <p className='text-base font-semibold text-gray-600'> {book.author}</p>
-
+                <div className='flex items-center justify-between'>
+                    <p className='text-base font-semibold text-gray-600'> {book.author}</p>
+                    <button className='text-lg flex items-center gap-2'>{book.upvote} <FaHeart /></button>
+                </div>
 
                 <Link to={`/books/${book._id}`} className='block'>
                     <button className='btn btn-primary w-full'>View Details</button>
