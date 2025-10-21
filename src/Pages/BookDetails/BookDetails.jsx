@@ -45,15 +45,7 @@ const BookDetails = () => {
     }
 
     const handleReview = () => {
-        if (user.email === email) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "You can not give review to you own book",
-            });
-            return
-        }
-
+        
         const newReview = {
             bookId: _id,
             bookTitle: title,
@@ -98,6 +90,36 @@ const BookDetails = () => {
     }, [_id])
 
     const userHasReviewed = reviews.find(review => review.reviewerEmail === user.email)
+
+    const handleDelete = (reviewId) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:3000/books/${_id}/review/${reviewId}`, {
+                    method: "DELETE",
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.deletedCount) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                            });
+                            const remainingReview = reviews.filter(review => review._id !== reviewId)
+                            setReviews(remainingReview)
+                        }
+                    })
+            }
+        });
+    }
 
     return (
         <div className='min-h-screen py-8 px-4 max-w-6xl mx-auto'>
@@ -154,11 +176,11 @@ const BookDetails = () => {
 
             {/* Review Section */}
 
-            <div className='mt-5 border-1 rounded-2xl p-5 shadow-2xl'>
+            <div className='mt-10 bg-base-200 rounded-4xl p-5 shadow-xl'>
                 <h2 className='font-semibold text-xl'>Check reviews about this book.</h2>
                 {
                     reviews.length > 0 && reviews.map((review, i) => (
-                        <div key={i} className="p-4 rounded-lg bg-zinc-50 shadow-xl my-3">
+                        <div key={i} className="p-4 rounded-lg bg-zinc-50 shadow-2xl my-3">
                             <div className="flex items-center gap-3 mb-2">
                                 <img
                                     src={review.reviewerPhoto}
@@ -172,13 +194,24 @@ const BookDetails = () => {
                                     </p>
                                 </div>
                             </div>
-                            <p className="text-gray-700">{review.reviewText}</p>
+                            <div>
+                                <p className="text-gray-700">{review.reviewText}</p>
+                                {
+                                    user.email === review.reviewerEmail && (
+                                        <div className='flex mt-2 gap-5'>
+                                            <button className='btn btn-primary btn-outline text-black'>Edit</button>
+                                            <button onClick={() => handleDelete(review._id)} className='btn btn-error btn-outline'>Delete</button>
+                                        </div>
+                                    )
+                                }
+                            </div>
                         </div>
+
                     ))
                 }
 
-                {!userHasReviewed && (
-                    <div className='mt-8 border rounded-2xl p-6 shadow-lg'>
+                {!userHasReviewed && user.email !== email && (
+                    <div className='mt-8  rounded-xl bg-white p-6 shadow-lg'>
                         <h2 className='text-2xl font-semibold mb-4'>Leave a Review</h2>
                         <div className='flex items-center gap-4 mb-3'>
                             <img className='w-12 h-12 rounded-full border' src={user.photoURL} alt={user.displayName} />
