@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider/AuthContext';
 import { FaHeart } from "react-icons/fa";
+import Swal from 'sweetalert2';
 
 const BookDetails = () => {
     const book = useLoaderData()
@@ -9,15 +10,21 @@ const BookDetails = () => {
     const { _id, cover, title, bookCategory, author, overview, page, readingStatus, name, email } = book
     const [vote, setVote] = useState(false)
     const [count, setCount] = useState(book.upvote || 0)
+    const [review, setReview] = useState('')
+    const [reviews, setReviews] = useState([]);
 
     const handleUpVote = () => {
         if (user.email === email) {
-            alert("can not vote")
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You can not like your added book",
+            });
             return
         }
 
         setVote(true)
-        const newCount = count+1
+        const newCount = count + 1
         setCount(newCount)
 
 
@@ -26,16 +33,71 @@ const BookDetails = () => {
             headers: {
                 'content-type': "application/json"
             },
-            body: JSON.stringify ({upvote : newCount})
+            body: JSON.stringify({ upvote: newCount })
         })
-        .then(res=>res.json())
-        .then(()=>{
-            console.log("vote successfully")
-        })
-        .catch(err=>{
-            console.log(err)
-        })
+            .then(res => res.json())
+            .then(() => {
+                console.log("vote successfully")
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
+
+    const handleReview = () => {
+        if (user.email === email) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You can not give review to you own book",
+            });
+            return
+        }
+
+        const newReview = {
+            bookId: _id,
+            bookTitle: title,
+            reviewText: review,
+            reviewerName: user.displayName || user.name,
+            reviewerEmail: user.email,
+            reviewerPhoto: user.photoURL,
+            created_at: new Date()
+        }
+
+        fetch(`http://localhost:3000/books/${_id}/review`, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(newReview)
+        })
+            .then(res => res.json())
+            .then(() => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Review added successfully!",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                setReviews([newReview, ...reviews])
+                setReview("")
+            })
+            .catch(err => {
+                console.log("Review Error", err)
+            })
+
+    }
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/books/${_id}/review`)
+            .then(res => res.json())
+            .then(data => setReviews(data))
+            .catch(err => {
+                console.log(err)
+            })
+    }, [_id])
+
+    const userHasReviewed = reviews.find(review => review.reviewerEmail === user.email)
 
     return (
         <div className='min-h-screen py-8 px-4 max-w-6xl mx-auto'>
@@ -89,6 +151,51 @@ const BookDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Review Section */}
+
+            <div className='mt-5 border-1 rounded-2xl p-5 shadow-2xl'>
+                <h2 className='font-semibold text-xl'>Check reviews about this book.</h2>
+                {
+                    reviews.length > 0 && reviews.map((review, i) => (
+                        <div key={i} className="p-4 rounded-lg bg-zinc-50 shadow-xl my-3">
+                            <div className="flex items-center gap-3 mb-2">
+                                <img
+                                    src={review.reviewerPhoto}
+                                    alt=""
+                                    className="w-10 h-10 rounded-full"
+                                />
+                                <div>
+                                    <h4 className="font-semibold">{review.reviewerName}</h4>
+                                    <p className="text-sm text-gray-500">
+                                        {new Date(review.created_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="text-gray-700">{review.reviewText}</p>
+                        </div>
+                    ))
+                }
+
+                {!userHasReviewed && (
+                    <div className='mt-8 border rounded-2xl p-6 shadow-lg'>
+                        <h2 className='text-2xl font-semibold mb-4'>Leave a Review</h2>
+                        <div className='flex items-center gap-4 mb-3'>
+                            <img className='w-12 h-12 rounded-full border' src={user.photoURL} alt={user.displayName} />
+                            <p className='font-medium'>{user.displayName || user.name}</p>
+                        </div>
+
+                        <textarea
+                            value={review}
+                            onChange={(e) => setReview(e.target.value)}
+                            className='textarea textarea-bordered w-full'
+                            placeholder='Write your review here...'
+                        ></textarea>
+                        <button onClick={handleReview} className='btn btn-primary mt-4'>Submit</button>
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 };
