@@ -12,6 +12,8 @@ const BookDetails = () => {
     const [count, setCount] = useState(book.upvote || 0)
     const [review, setReview] = useState('')
     const [reviews, setReviews] = useState([]);
+    const [reviewId, setReviewId] = useState(null)
+    const [editText, setEditText] = useState('')
 
     const handleUpVote = () => {
         if (user.email === email) {
@@ -45,7 +47,7 @@ const BookDetails = () => {
     }
 
     const handleReview = () => {
-        
+
         const newReview = {
             bookId: _id,
             bookTitle: title,
@@ -119,6 +121,43 @@ const BookDetails = () => {
                     })
             }
         });
+    }
+
+    const handleEdit = (review) => {
+        setReviewId(review._id)
+        setEditText(review.reviewText)
+    }
+
+    const handleEditReview = (reviewId) => {
+        fetch(`http://localhost:3000/books/${_id}/review/${reviewId}`, {
+            method: "PATCH",
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({ reviewText: editText })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.modifiedCount) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Review updated!",
+                        timer: 1500
+                    });
+                    // Update the reviews state
+                    const updatedReviews = reviews.map(review =>
+                        review._id === reviewId
+                            ? { ...review, reviewText: editText }
+                            : review
+                    )
+                    setReviews(updatedReviews)
+                    setReviewId(null)
+                    setEditText('')
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     return (
@@ -195,15 +234,54 @@ const BookDetails = () => {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-gray-700">{review.reviewText}</p>
-                                {
-                                    user.email === review.reviewerEmail && (
-                                        <div className='flex mt-2 gap-5'>
-                                            <button className='btn btn-primary btn-outline text-black'>Edit</button>
-                                            <button onClick={() => handleDelete(review._id)} className='btn btn-error btn-outline'>Delete</button>
+                                
+                                {reviewId === review._id ? (
+                                    <div>
+                                        <textarea
+                                            className='textarea textarea-bordered w-full'
+                                            value={editText}
+                                            onChange={(e) => setEditText(e.target.value)}
+                                        ></textarea>
+                                        <div className='flex gap-3 mt-3'>
+                                            <button
+                                                onClick={() => handleEditReview(review._id)}
+                                                className='btn btn-primary'
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setReviewId(null);
+                                                    setEditText('');
+                                                }}
+                                                className='btn btn-error btn-outline'
+                                            >
+                                                Cancel
+                                            </button>
                                         </div>
-                                    )
-                                }
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p className="text-gray-700">{review.reviewText}</p>
+                                        {user.email === review.reviewerEmail && (
+                                            <div className='flex mt-2 gap-5'>
+                                                <button
+                                                    onClick={() => handleEdit(review)}
+                                                    className='btn btn-primary btn-outline text-black'
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(review._id)}
+                                                    className='btn btn-error btn-outline'
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                             </div>
                         </div>
 
@@ -228,7 +306,6 @@ const BookDetails = () => {
                     </div>
                 )}
             </div>
-
         </div>
     );
 };
