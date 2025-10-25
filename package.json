@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@glidejs/glide": "^3.7.1",
     "@mui/material": "^7.3.4",
     "@mui/x-charts": "^8.14.1",
     "@tailwindcss/vite": "^4.1.14",
@@ -26,6 +27,7 @@
     "react-tooltip": "^5.30.0",
     "recharts": "^3.3.0",
     "sweetalert2": "^11.26.3",
+    "swiper": "^12.0.3",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
