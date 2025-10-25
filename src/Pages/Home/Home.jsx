@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import 'swiper/css/navigation';
 import { Autoplay, EffectCoverflow, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react';
+import Books from '../BookShelf/Books';
 
 
 const Home = () => {
@@ -111,11 +112,36 @@ const Home = () => {
         )
     }
 
+    const [books, setBooks] =useState([])
+    useEffect (()=>{
+        fetch(`http://localhost:3000/books`)
+        .then(res=>res.json())
+        .then(data=>{
+            console.log(data)
+            setBooks(data)
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    },[])
+
     return (
         <div className=" py-8 px-4 sm:px-6 lg:px-8">
 
+            {/* slider */}
             <div className="w-full mx-auto">
                 <Slider />
+            </div>
+
+            {/* Popular  */}
+            <h1 className='font-bold text-4xl text-center mt-10'>Popular Books</h1> 
+            <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mt-5'>
+                {
+                    books.filter(book=>book.upvote>0)
+                    .sort((a,b)=>b.upvote - a.upvote)
+                    .slice(0,6)
+                    .map(book=><Books key={book._id} book={book}></Books>)
+                }
             </div>
 
         </div>
